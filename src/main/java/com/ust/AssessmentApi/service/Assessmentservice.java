@@ -1,11 +1,9 @@
 package com.ust.AssessmentApi.service;
 
+import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
 import com.ust.AssessmentApi.dto.Questionsdto;
 import com.ust.AssessmentApi.dto.Setdto;
-import com.ust.AssessmentApi.model.Person;
-import com.ust.AssessmentApi.model.Questions;
-import com.ust.AssessmentApi.model.Set;
-import com.ust.AssessmentApi.model.status;
+import com.ust.AssessmentApi.model.*;
 import com.ust.AssessmentApi.repository.Optionsrepository;
 import com.ust.AssessmentApi.repository.Questionsrepository;
 import com.ust.AssessmentApi.repository.Setrepository;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,21 +30,9 @@ public class Assessmentservice {
     private Setrepository setrepository;
 
 
-
-    public List<Set> getAllSets(){
+    public List<Set> getAllSets() {
         return setrepository.findAll();
     }
-
-//    public Setdto createSet(Setdto dto1) {
-//        Setdto setdto=new Setdto();
-//        setdto.setSetname(dto1.getSetname());
-//        setdto.setDomain(dto1.getDomain());
-//        setdto.setCreatedby(Person.getName());
-//        setdto.setLocalDateTime(LocalDateTime.now());
-//        setdto.setQuestionsList( dto1.getQuestionsList());
-//        setrepository.save(setdto);
-//        return setdto;
-//    }
 
     public Set createSet(Setdto set1) {
         Set set = new Set();
@@ -56,6 +43,8 @@ public class Assessmentservice {
         List<Questions> questionEntities = set1.getQuestionsList().stream()
                 .map(questions -> {
                     Questions questionEntity = new Questions();
+                    questionEntity.setSetname(set1.getSetname());
+                    questionEntity.setQuestiontext(questions.getQuestiontext());
                     return questionEntity;
                 })
                 .collect(Collectors.toList());
@@ -66,15 +55,24 @@ public class Assessmentservice {
 
     }
 
-
     public Set getSet(String setname) {
         return setrepository.findBySetname(setname);
     }
+
     public Questions updateQuestion(String setname, Long questionId, Questionsdto qdto) {
         Questions questions = questionsRepository.findBySetname(setname);
-        if (questions.getQuestionid().equals(questionId)) {
-            questions.setOptions(qdto.getOptions());
-            BeanUtils.copyProperties(qdto, questions);
+        if (questions.getQuestionid()==questionId) {
+            List<Options> optionsEntities = qdto.getOptions().stream()
+                    .map(options -> {
+                        Options optionsEntity = new Options();
+                        optionsEntity.setQuestionid(qdto.getQuestionid());
+                        optionsEntity.setValue(options.getValue());
+                        optionsEntity.setSuggestions(options.getSuggestions());
+                        return optionsEntity;
+                    })
+                    .collect(Collectors.toList());
+            optionsrepository.saveAll(optionsEntities);
+            questions.setOptions(optionsEntities);
             questionsRepository.save(questions);
         }
         return questions;
@@ -89,12 +87,12 @@ public class Assessmentservice {
 
 //        question.setOptions(qdto.getOptions());
 //        return questionsRepository.save(question);
-    }
+
 
 //    public Set updateQuestion(String setname, Long questionId, Questionsdto qdto) {
-//        Questions question= questionsRepository.findBySetname(setname);
+//        Questions question = questionsRepository.findBySetname(setname);
 //        question.setOptions(qdto.getOptions());
 //        return questionsRepository.save(question);
 //    }
-
+}
 

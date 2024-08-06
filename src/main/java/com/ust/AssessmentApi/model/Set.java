@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.security.Timestamp;
+
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -29,12 +30,11 @@ public class Set {
     private String updatedBy;
 
     @CreationTimestamp
-    private Timestamp createdTime;
+    private Date createdTime;
 
     @UpdateTimestamp
-    private Timestamp updatedTime;
+    private Date updatedTime;
 
     @OneToMany(cascade= CascadeType.ALL)
-    @JsonIgnore
     private List<Questions> questionList;
 }

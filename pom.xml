@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ust</groupId>
-	<artifactId>AssessmentApi</artifactId>
+	<artifactId>Assessment-Microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>AssessmentApi</name>
 	<description>Demo project for Spring Boot</description>

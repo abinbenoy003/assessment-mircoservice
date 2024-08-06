@@ -19,7 +19,6 @@ public class Questions {
     private String setname;
     private String questiontext;
     @OneToMany(cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Options> options;
 
 }
