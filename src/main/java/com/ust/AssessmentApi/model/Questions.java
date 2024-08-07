@@ -19,6 +19,7 @@ public class Questions {
     private Long setId;
     private String question_description;
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="question_id")
     private List<Options> options;
 
 }

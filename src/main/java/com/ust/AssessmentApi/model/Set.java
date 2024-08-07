@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -30,11 +31,10 @@ public class Set {
 
     private String updated_by;
 
-    @CreationTimestamp
-    private Date created_timestamp;
+    private Date createdTimestamp;
+    private Date updatedTimestamp;
 
-    @UpdateTimestamp
-    private Date updated_timestamp;
+
 
     @OneToMany(cascade= CascadeType.ALL)
     private List<Questions> questionList;

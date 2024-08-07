@@ -9,7 +9,9 @@ import com.ust.AssessmentApi.repository.Setrepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,8 @@ public class Assessmentservice {
         set.setDomain(set1.getDomain());
         set.setCreatedby(Person.getName());
         set.setStatus(Status.INITIATED);
+        set.setCreatedTimestamp(new Date());
+        set.setUpdatedTimestamp(null);
         List<Questions> questionEntities = set1.getQuestionList().stream()
                 .map(questions -> {
                     Questions questionEntity = new Questions();
@@ -52,10 +56,12 @@ public class Assessmentservice {
     }
 
     public Set getSet(Long setId) {
-        return setrepository.findBySetId(setId);
+        return setrepository.findById(setId).orElse(null);
     }
 
     public List<Questions> updateQuestion(Long setId, Long question_id, Questionsdto qdto) {
+        Set set = setrepository.findById(setId).orElse(null);
+        set.setUpdatedTimestamp(new Date());
         List<Questions> questions = questionsRepository.findBySetId(setId);
         for( Questions question:questions){
             if (question.getQuestion_id()==question_id) {
@@ -63,7 +69,7 @@ public class Assessmentservice {
                 List<Options> optionsEntities = qdto.getOptionsdtoList().stream()
                         .map(option -> {
                             Options optionsEntity = new Options();
-                            optionsEntity.setQuestionid(question_id);
+                            optionsEntity.setQuestion_id(question_id);
                             optionsEntity.setAnswer(option.getAnswer());
                             optionsEntity.setSuggestion(option.getSuggestion());
                             return optionsEntity;
@@ -71,20 +77,28 @@ public class Assessmentservice {
                         .collect(Collectors.toList());
                 optionsrepository.saveAll(optionsEntities);
                 question.setOptions(optionsEntities);
-
             }
         }
         questionsRepository.saveAll(questions);
         return questions;
     }
 
-    public void deleteQuestion(Long setId, Long question_id) {
-        List<Questions> questions = questionsRepository.findBySetId(setId);
-        for(Questions question : questions) {
-        questionsRepository.findById(question.getQuestion_id());
-        questionsRepository.deleteById(question_id);
-        }
-    }
 
+    public boolean deleteQuestion(Long setId, Long question_id) {
+        Set set = setrepository.findById(setId).orElse(null);
+        List<Questions> questions = set.getQuestionList();
+        for(Questions question : questions) {
+            if(question.getQuestion_id() == question_id) {
+                questions.remove(question);
+                set.setQuestionList(questions);
+                setrepository.save(set);
+                questionsRepository.deleteById(question_id);
+                return true;
+            }
+        }
+        return false;
+    }
 }
+
+
 
