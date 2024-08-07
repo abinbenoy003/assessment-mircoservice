@@ -1,19 +1,14 @@
 package com.ust.AssessmentApi.service;
 
-import com.fasterxml.jackson.databind.ser.BeanPropertyFilter;
 import com.ust.AssessmentApi.dto.Questionsdto;
 import com.ust.AssessmentApi.dto.Setdto;
 import com.ust.AssessmentApi.model.*;
 import com.ust.AssessmentApi.repository.Optionsrepository;
 import com.ust.AssessmentApi.repository.Questionsrepository;
 import com.ust.AssessmentApi.repository.Setrepository;
-import com.ust.AssessmentApi.utils.Apputils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,15 +31,16 @@ public class Assessmentservice {
 
     public Set createSet(Setdto set1) {
         Set set = new Set();
-        set.setSetname(set1.getSetname());
+        set.setSetId(set1.getSetId());
+        set.setSet_description(set1.getSet_description());
         set.setDomain(set1.getDomain());
         set.setCreatedby(Person.getName());
-        set.setStatus(status.INITIATED);
-        List<Questions> questionEntities = set1.getQuestionsList().stream()
+        set.setStatus(Status.INITIATED);
+        List<Questions> questionEntities = set1.getQuestionList().stream()
                 .map(questions -> {
                     Questions questionEntity = new Questions();
-                    questionEntity.setSetname(set1.getSetname());
-                    questionEntity.setQuestiontext(questions.getQuestiontext());
+                    questionEntity.setSetId(set1.getSetId());
+                    questionEntity.setQuestion_description(questions.getQuestion_description());
                     return questionEntity;
                 })
                 .collect(Collectors.toList());
@@ -55,44 +51,40 @@ public class Assessmentservice {
 
     }
 
-    public Set getSet(String setname) {
-        return setrepository.findBySetname(setname);
+    public Set getSet(Long setId) {
+        return setrepository.findBySetId(setId);
     }
 
-    public Questions updateQuestion(String setname, Long questionId, Questionsdto qdto) {
-        Questions questions = questionsRepository.findBySetname(setname);
-        if (questions.getQuestionid()==questionId) {
-            List<Options> optionsEntities = qdto.getOptions().stream()
-                    .map(options -> {
-                        Options optionsEntity = new Options();
-                        optionsEntity.setQuestionid(qdto.getQuestionid());
-                        optionsEntity.setValue(options.getValue());
-                        optionsEntity.setSuggestions(options.getSuggestions());
-                        return optionsEntity;
-                    })
-                    .collect(Collectors.toList());
-            optionsrepository.saveAll(optionsEntities);
-            questions.setOptions(optionsEntities);
-            questionsRepository.save(questions);
+    public List<Questions> updateQuestion(Long setId, Long question_id, Questionsdto qdto) {
+        List<Questions> questions = questionsRepository.findBySetId(setId);
+        for( Questions question:questions){
+            if (question.getQuestion_id()==question_id) {
+                question.setQuestion_description(qdto.getQuestion_description());
+                List<Options> optionsEntities = qdto.getOptionsdtoList().stream()
+                        .map(option -> {
+                            Options optionsEntity = new Options();
+                            optionsEntity.setQuestionid(question_id);
+                            optionsEntity.setAnswer(option.getAnswer());
+                            optionsEntity.setSuggestion(option.getSuggestion());
+                            return optionsEntity;
+                        })
+                        .collect(Collectors.toList());
+                optionsrepository.saveAll(optionsEntities);
+                question.setOptions(optionsEntities);
+
+            }
         }
+        questionsRepository.saveAll(questions);
         return questions;
     }
 
-    public void deleteQuestion(String setname, Long questionId) {
-        Questions questions = questionsRepository.findBySetname(setname);
-//        questionsRepository.deletebyId(questions.getQuestionid());
-        questionsRepository.deleteById(questionId);
+    public void deleteQuestion(Long setId, Long question_id) {
+        List<Questions> questions = questionsRepository.findBySetId(setId);
+        for(Questions question : questions) {
+        questionsRepository.findById(question.getQuestion_id());
+        questionsRepository.deleteById(question_id);
+        }
     }
 
-
-//        question.setOptions(qdto.getOptions());
-//        return questionsRepository.save(question);
-
-
-//    public Set updateQuestion(String setname, Long questionId, Questionsdto qdto) {
-//        Questions question = questionsRepository.findBySetname(setname);
-//        question.setOptions(qdto.getOptions());
-//        return questionsRepository.save(question);
-//    }
 }
 

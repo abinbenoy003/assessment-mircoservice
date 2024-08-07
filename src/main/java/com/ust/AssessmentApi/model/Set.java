@@ -1,12 +1,13 @@
 package com.ust.AssessmentApi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 
 import java.util.Date;
@@ -19,21 +20,21 @@ import java.util.List;
 @Table(name="assessments")
 public class Set {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sino;
-    private String setname;
+    private Long setId;
+    private String set_description;
     private String createdby;
     private String domain;
 
     @Enumerated(value= EnumType.STRING)
-    private status status;
-    private String updatedBy;
+    private Status status;
+
+    private String updated_by;
 
     @CreationTimestamp
-    private Date createdTime;
+    private Date created_timestamp;
 
     @UpdateTimestamp
-    private Date updatedTime;
+    private Date updated_timestamp;
 
     @OneToMany(cascade= CascadeType.ALL)
     private List<Questions> questionList;

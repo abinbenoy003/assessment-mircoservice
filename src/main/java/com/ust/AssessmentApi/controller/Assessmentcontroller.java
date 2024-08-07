@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+//@RequestMapping()
 public class Assessmentcontroller {
 
     @Autowired
@@ -23,24 +23,24 @@ public class Assessmentcontroller {
         return assessmentService.getAllSets();
     }
 
-    @PostMapping("/assessment/setname")
+    @PostMapping("/assessment")
     public Set createquestion(@RequestBody Setdto set1){
         return assessmentService.createSet(set1);
 
     }
 
-    @GetMapping("/assessment/{setname}")
-    public Set getSet(@PathVariable String setname){
-        return assessmentService.getSet(setname);
+    @GetMapping("/assessment/{setId}")
+    public Set getSet(@PathVariable Long setId){
+        return assessmentService.getSet(setId);
     }
 
-    @PutMapping("/assessment/{setname}/edit/{questionId}")
-    public Questions updateQuestion(@PathVariable String setname, @PathVariable Long questionId, @RequestBody Questionsdto qdto){
-        return assessmentService.updateQuestion(setname, questionId, qdto);
+    @PutMapping("/assessment/{setId}/{question_id}")
+    public List<Questions >updateQuestion(@PathVariable Long setId, @PathVariable Long question_id, @RequestBody Questionsdto qdto){
+        return assessmentService.updateQuestion(setId, question_id, qdto);
     }
-    @DeleteMapping("/assessment/{setname}/delete/{questionId}")
-    public void deleteQuestion(@PathVariable String setname, @PathVariable Long questionId){
-        assessmentService.deleteQuestion(setname, questionId);
+    @DeleteMapping("/assessment/{setId}/{question_id}")
+    public void deleteQuestion(@PathVariable Long setId, @PathVariable Long question_id){
+        assessmentService.deleteQuestion(setId, question_id);
     }
 
 }

@@ -15,9 +15,9 @@ import java.util.List;
 public class Questions {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionid;
-    private String setname;
-    private String questiontext;
+    private Long question_id;
+    private Long setId;
+    private String question_description;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Options> options;
 

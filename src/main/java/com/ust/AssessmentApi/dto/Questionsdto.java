@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Questionsdto {
-    private Long questionid;
-    private String questiontext;
-    private List<Options> options;
+    private String question_description;
+    private List<Optionsdto> optionsdtoList;
 }

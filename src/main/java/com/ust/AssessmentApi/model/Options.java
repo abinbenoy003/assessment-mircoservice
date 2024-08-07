@@ -15,6 +15,6 @@ public class Options {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long optionid;
     private Long questionid;
-    private String value;
-    private String suggestions;
+    private String answer;
+    private String suggestion;
 }

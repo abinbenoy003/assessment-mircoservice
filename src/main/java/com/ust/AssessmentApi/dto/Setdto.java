@@ -1,5 +1,6 @@
 package com.ust.AssessmentApi.dto;
 
+import com.ust.AssessmentApi.model.Questions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Setdto {
 
-    private String setname;
+    private Long setId;
+    private String set_description;
     private String domain;
-    //private String createdby;
-    //private LocalDateTime localDateTime;
-
-    private List<Questionsdto> questionsList;
+    private List<Questions> questionList;
 }
